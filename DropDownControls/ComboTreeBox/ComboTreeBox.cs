@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -767,21 +768,22 @@ public class ComboTreeBox : DropDownControlBase {
 	/// Returns a string containing the concatenated text of the checked nodes.
 	/// </summary>
 	/// <returns></returns>
-	private string GetCheckedNodeString() {
-		StringBuilder sb = new StringBuilder();
+    public string GetCheckedNodeString() {
+        return string.Join(_checkedNodeSeparator, CheckedNodes.Select(t => _showPath ? GetFullPath(t) : t.ToolTip)
+            .Distinct().OrderBy(s => s));
 
-		foreach (ComboTreeNode node in CheckedNodes) {
-			if (_showPath)
-				sb.Append(GetFullPath(node));
-			else
-				sb.Append(node.Text);
+        // StringBuilder sb = new StringBuilder();
+		//foreach (ComboTreeNode node in CheckedNodes) {
+		//	if (_showPath)
+		//		sb.Append(GetFullPath(node));
+		//	else
+		//		sb.Append(node.Text);
 
-			sb.Append(_checkedNodeSeparator);
-		}
-
-		if (sb.Length > 0) sb.Remove(sb.Length - _checkedNodeSeparator.Length, _checkedNodeSeparator.Length);
-
-		return sb.ToString();
+		//	sb.Append(_checkedNodeSeparator);
+		//}
+		// if (sb.Length > 0) sb.Remove(sb.Length - _checkedNodeSeparator.Length, _checkedNodeSeparator.Length);
+		//
+		// return sb.ToString();
 	}
 
     /// <summary>
