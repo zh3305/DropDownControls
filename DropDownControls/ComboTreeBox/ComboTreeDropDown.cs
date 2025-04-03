@@ -36,8 +36,7 @@ public class ComboTreeDropDown : ToolStripDropDown {
 	private int _highlightedItemIndex;
 	private Rectangle _interior;
 	private int _itemHeight;
-	private int _numItemsDisplayed;
-	private bool _scrollBarVisible;
+    private bool _scrollBarVisible;
 	private ScrollBarInfo _scrollBar;
 	private bool _scrollDragging;
 	private int _scrollOffset;
@@ -46,9 +45,8 @@ public class ComboTreeDropDown : ToolStripDropDown {
 	private Timer _toolTipTimer;
 	private ComboTreeBox _sourceControl;
 	private List<NodeInfo> _visibleItems;
-	private bool _processKeys;
 
-	/// <summary>
+    /// <summary>
 	/// Gets the collapsed (+) glyph to paint on the dropdown.
 	/// </summary>
 	private Image Collapsed {
@@ -68,18 +66,15 @@ public class ComboTreeDropDown : ToolStripDropDown {
 	/// <summary>
 	/// Removes extraneous default padding from the dropdown.
 	/// </summary>
-	protected override Padding DefaultPadding {
-		get {
-			return new Padding(0, 1, 0, 1);
-		}
-	}
-	/// <summary>
+	protected override Padding DefaultPadding => new Padding(0, 1, 0, 1);
+
+    /// <summary>
 	/// Gets or sets the maximum height of the dropdown. 
     /// If the dropdown contains fewer items, it will be shortened.
 	/// </summary>
 	public int DropDownHeight {
-		get { return _dropDownHeight; }
-		set {
+		get => _dropDownHeight;
+        set {
 			_dropDownHeight = value;
 			UpdateVisibleItems();
 		}
@@ -89,7 +84,7 @@ public class ComboTreeDropDown : ToolStripDropDown {
     /// Limited to at least the width of the source control.
     /// </summary>
     public int DropDownWidth {
-        get { return _dropDownWidth; }
+        get => _dropDownWidth;
         set {
             _dropDownWidth = value;
             UpdateVisibleItems();
@@ -115,22 +110,18 @@ public class ComboTreeDropDown : ToolStripDropDown {
 	/// Gets or sets a value indicating whether to process keyboard events.
 	/// </summary>
 	[DefaultValue(true)]
-	public bool ProcessKeys {
-		get { return _processKeys; }
-		set { _processKeys = value; }
-	}
-	/// <summary>
+	public bool ProcessKeys { get; set; }
+
+    /// <summary>
 	/// Gets or sets the first visible ComboTreeNode in the drop-down portion of the control.
 	/// </summary>
 	public ComboTreeNode TopNode {
-		get {
-			return _visibleItems[_scrollOffset].Node;
-		}
-		set {
+		get => _visibleItems[_scrollOffset].Node;
+        set {
 			for (int i = 0; i < _visibleItems.Count; i++) {
 				if (_visibleItems[i].Node == value) {
-					if ((i < _scrollOffset) || (i >= (_scrollOffset + _numItemsDisplayed))) {
-						_scrollOffset = Math.Min(Math.Max(0, i - _numItemsDisplayed + 1), _visibleItems.Count - _numItemsDisplayed);
+					if ((i < _scrollOffset) || (i >= (_scrollOffset + VisibleCount))) {
+						_scrollOffset = Math.Min(Math.Max(0, i - VisibleCount + 1), _visibleItems.Count - VisibleCount);
 						UpdateScrolling();
 					}
 					break;
@@ -141,13 +132,9 @@ public class ComboTreeDropDown : ToolStripDropDown {
 	/// <summary>
 	/// Gets the number of ComboTreeNodes visible in the drop-down portion of the control.
 	/// </summary>
-	public int VisibleCount {
-		get {
-			return _numItemsDisplayed;
-		}
-	}
+	public int VisibleCount { get; private set; }
 
-	/// <summary>
+    /// <summary>
 	/// Fired when a node is drawn in the drop-down portion of the control.
 	/// </summary>
 	public event EventHandler<ComboTreeNodePaintEventArgs> DrawNode;
@@ -160,7 +147,7 @@ public class ComboTreeDropDown : ToolStripDropDown {
 		_visibleItems = new List<NodeInfo>();
 		_bitmaps = new Dictionary<BitmapInfo, Image>();
 		_scrollBar = new ScrollBarInfo();
-		_processKeys = true;
+		ProcessKeys = true;
 		AutoSize = false;
 		this._sourceControl = sourceControl;
         RenderMode = ToolStripRenderMode.System;
@@ -575,19 +562,19 @@ public class ComboTreeDropDown : ToolStripDropDown {
 			Invalidate();
 		}
 		else if (keyCode == Keys.End) {
-			_scrollOffset = _visibleItems.Count - _numItemsDisplayed;
+			_scrollOffset = _visibleItems.Count - VisibleCount;
 			_highlightedItemIndex = _visibleItems.Count - 1;
 			UpdateScrolling();
 			Invalidate();
 		}
 		else if (keyCode == Keys.PageDown) {
-			_scrollOffset = Math.Min(_scrollOffset + _numItemsDisplayed, _visibleItems.Count - _numItemsDisplayed);
-			_highlightedItemIndex = Math.Min(_scrollOffset + _numItemsDisplayed - 1, _visibleItems.Count - 1);
+			_scrollOffset = Math.Min(_scrollOffset + VisibleCount, _visibleItems.Count - VisibleCount);
+			_highlightedItemIndex = Math.Min(_scrollOffset + VisibleCount - 1, _visibleItems.Count - 1);
 			UpdateScrolling();
 			Refresh();
 		}
 		else if (keyCode == Keys.PageUp) {
-			_highlightedItemIndex = _scrollOffset = Math.Max(_scrollOffset - _numItemsDisplayed, 0);
+			_highlightedItemIndex = _scrollOffset = Math.Max(_scrollOffset - VisibleCount, 0);
 			UpdateScrolling();
 			Refresh();
 		}
@@ -639,8 +626,8 @@ public class ComboTreeDropDown : ToolStripDropDown {
 
 			// measure the scroll offset based on the location of the mouse pointer, relative to the scrollbar's bounds
 			_scrollOffset = Math.Max(0, Math.Min(
-				(int)((position / availableHeight) * (double)(_visibleItems.Count - _numItemsDisplayed)),
-				(_visibleItems.Count - _numItemsDisplayed)
+				(int)((position / availableHeight) * (double)(_visibleItems.Count - VisibleCount)),
+				(_visibleItems.Count - VisibleCount)
 			));
 			
 			UpdateScrolling();
@@ -661,7 +648,7 @@ public class ComboTreeDropDown : ToolStripDropDown {
 
 		// hit-test each displayed item's bounds to determine the highlighted item
 		bool isHit = false;
-		for (int i = _scrollOffset; i < (_scrollOffset + _numItemsDisplayed); i++) {
+		for (int i = _scrollOffset; i < (_scrollOffset + VisibleCount); i++) {
 			if (_visibleItems[i].DisplayRectangle.Contains(e.Location)) {
 				if (_highlightedItemIndex != i) {
 					// highlighted item changed, reset tooltip timer
@@ -695,7 +682,7 @@ public class ComboTreeDropDown : ToolStripDropDown {
 		if (_scrollBarVisible && _scrollBar.DisplayRectangle.Contains(e.Location)) {
 			if (e.Y > _scrollBar.Thumb.Bottom) {
 				// any point below the thumb button requires scrolling - on bar = pagedown, on button = next
-				int step = (_scrollBar.DownArrow.Contains(e.Location)) ? 1 : _numItemsDisplayed;
+				int step = (_scrollBar.DownArrow.Contains(e.Location)) ? 1 : VisibleCount;
 				ScrollDropDown(step);
 
 				// if the button is held, start auto-repeat behaviour
@@ -707,7 +694,7 @@ public class ComboTreeDropDown : ToolStripDropDown {
 			}
 			else if (e.Y < _scrollBar.Thumb.Top) {
 				// any point above the thumb button requires scrolling - on bar = pagedown, on button = next
-				int step = (_scrollBar.UpArrow.Contains(e.Location)) ? 1 : _numItemsDisplayed;
+				int step = (_scrollBar.UpArrow.Contains(e.Location)) ? 1 : VisibleCount;
 				ScrollDropDown(-step);
 
 				// if the button is held, start auto-repeat behaviour
@@ -755,7 +742,7 @@ public class ComboTreeDropDown : ToolStripDropDown {
 		if (_scrollDragging) return;
 
 		if (e.Button == System.Windows.Forms.MouseButtons.Left) {
-			for (int i = _scrollOffset; i < (_scrollOffset + _numItemsDisplayed); i++) {
+			for (int i = _scrollOffset; i < (_scrollOffset + VisibleCount); i++) {
 				NodeInfo info = _visibleItems[i];
 
 				if (info.DisplayRectangle.Contains(e.Location)) {
@@ -891,7 +878,7 @@ public class ComboTreeDropDown : ToolStripDropDown {
 			}
 		}
 
-		for (int i = _scrollOffset; i < (_scrollOffset + _numItemsDisplayed); i++) {
+		for (int i = _scrollOffset; i < (_scrollOffset + VisibleCount); i++) {
 			NodeInfo item = _visibleItems[i];
 			bool highlighted = ((_highlightedItemIndex == i) && item.Node.Selectable);
 			bool focusable = (_highlightedItemIndex == i);
@@ -1005,8 +992,8 @@ public class ComboTreeDropDown : ToolStripDropDown {
 		for (int i = 0; i < _visibleItems.Count; i++) {
 			if (_visibleItems[i].Node == node) {
 				_highlightedItemIndex = i;
-				if ((_highlightedItemIndex < _scrollOffset) || (_highlightedItemIndex >= (_scrollOffset + _numItemsDisplayed))) {
-					_scrollOffset = Math.Min(Math.Max(0, _highlightedItemIndex - _numItemsDisplayed + 1), _visibleItems.Count - _numItemsDisplayed);
+				if ((_highlightedItemIndex < _scrollOffset) || (_highlightedItemIndex >= (_scrollOffset + VisibleCount))) {
+					_scrollOffset = Math.Min(Math.Max(0, _highlightedItemIndex - VisibleCount + 1), _visibleItems.Count - VisibleCount);
 					UpdateScrolling();
 				}
 				break;
@@ -1027,7 +1014,7 @@ public class ComboTreeDropDown : ToolStripDropDown {
 		}
 		else if (offset > 0) {
 			// down/right
-			_scrollOffset = Math.Min(_scrollOffset + offset, _visibleItems.Count - _numItemsDisplayed);
+			_scrollOffset = Math.Min(_scrollOffset + offset, _visibleItems.Count - VisibleCount);
 			UpdateScrolling();
 			Invalidate();
 		}
@@ -1039,11 +1026,11 @@ public class ComboTreeDropDown : ToolStripDropDown {
 	/// </summary>
 	/// <param name="highlightedAtTop"></param>
 	private void ScrollToHighlighted(bool highlightedAtTop) {
-		if ((_highlightedItemIndex < _scrollOffset) || (_highlightedItemIndex >= (_scrollOffset + _numItemsDisplayed))) {
+		if ((_highlightedItemIndex < _scrollOffset) || (_highlightedItemIndex >= (_scrollOffset + VisibleCount))) {
 			if (highlightedAtTop)
-				_scrollOffset = Math.Min(_highlightedItemIndex, _visibleItems.Count - _numItemsDisplayed);
+				_scrollOffset = Math.Min(_highlightedItemIndex, _visibleItems.Count - VisibleCount);
 			else
-				_scrollOffset = Math.Min(Math.Max(0, _highlightedItemIndex - _numItemsDisplayed + 1), _visibleItems.Count - _numItemsDisplayed);
+				_scrollOffset = Math.Min(Math.Max(0, _highlightedItemIndex - VisibleCount + 1), _visibleItems.Count - VisibleCount);
 
 			UpdateScrolling();
 		}
@@ -1058,7 +1045,7 @@ public class ComboTreeDropDown : ToolStripDropDown {
 			// calculate the bounds of the scrollbar's 'thumb' button
 			int availableHeight = _scrollBar.DisplayRectangle.Height - (2 * SCROLLBUTTON_SIZE.Height);
 
-			double percentSize = (double)_numItemsDisplayed / (double)_visibleItems.Count;
+			double percentSize = (double)VisibleCount / (double)_visibleItems.Count;
 			int size = Math.Max((int)(percentSize * (double)availableHeight), MIN_THUMB_HEIGHT);
 			int diff = Math.Max(0, MIN_THUMB_HEIGHT - (int)(percentSize * (double)availableHeight));
 
@@ -1069,7 +1056,7 @@ public class ComboTreeDropDown : ToolStripDropDown {
 		}
 
 		// calculate display rectangles and assign images for each item in the scroll range
-		for (int i = _scrollOffset; i < (_scrollOffset + _numItemsDisplayed); i++) {
+		for (int i = _scrollOffset; i < (_scrollOffset + VisibleCount); i++) {
 			NodeInfo info = _visibleItems[i];
 			if (info.Image == null) info.Image = GetItemBitmap(info.Node);
 			info.DisplayRectangle = new Rectangle(_interior.X, _interior.Y + (_itemHeight * (i - _scrollOffset)), _interior.Width, _itemHeight);
@@ -1119,7 +1106,7 @@ public class ComboTreeDropDown : ToolStripDropDown {
 
 		_highlightedItemIndex = Math.Max(0, Math.Min(_visibleItems.FindIndex(f => f.Node.Selectable), _visibleItems.Count - 1));
 
-		_numItemsDisplayed = Math.Min((_dropDownHeight / _itemHeight) + 1, _visibleItems.Count);
+		VisibleCount = Math.Min((_dropDownHeight / _itemHeight) + 1, _visibleItems.Count);
 		int maxHeight = (((_dropDownHeight / _itemHeight) + 1) * _itemHeight) + 2;
 
         // dropdown will be at least the width of the source control and at most the assigned height
@@ -1132,8 +1119,8 @@ public class ComboTreeDropDown : ToolStripDropDown {
 		_interior = ClientRectangle;
 		_interior.Inflate(-1, -1);
 
-		_scrollBarVisible = (_numItemsDisplayed < _visibleItems.Count);
-        _scrollOffset = Math.Max(0, Math.Min(_scrollOffset, (_visibleItems.Count - _numItemsDisplayed)));
+		_scrollBarVisible = (VisibleCount < _visibleItems.Count);
+        _scrollOffset = Math.Max(0, Math.Min(_scrollOffset, (_visibleItems.Count - VisibleCount)));
         if (_scrollBarVisible) {
 			_interior.Width -= 17;
 			_scrollBar.DisplayRectangle = new Rectangle(_interior.Right, _interior.Top, 17, _interior.Height);

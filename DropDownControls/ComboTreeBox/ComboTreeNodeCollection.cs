@@ -314,13 +314,9 @@ public class ComboTreeNodeCollection : IList<ComboTreeNode>, IList, INotifyColle
 	/// <summary>
 	/// Gets the number of nodes in the collection.
 	/// </summary>
-	public int Count {
-		get {
-			return _innerList.Count;
-		}
-	}
+	public int Count => _innerList.Count;
 
-	/// <summary>
+    /// <summary>
 	/// Copies all the nodes from the collection to a compatible array.
 	/// </summary>
 	/// <param name="array"></param>
@@ -344,13 +340,9 @@ public class ComboTreeNodeCollection : IList<ComboTreeNode>, IList, INotifyColle
 		return false;
 	}
 
-	bool ICollection<ComboTreeNode>.IsReadOnly {
-		get {
-			return false;
-		}
-	}
+	bool ICollection<ComboTreeNode>.IsReadOnly => false;
 
-	#endregion
+    #endregion
 
 	#region IEnumerable<ComboTreeNode> Members
 
@@ -372,10 +364,8 @@ public class ComboTreeNodeCollection : IList<ComboTreeNode>, IList, INotifyColle
 	/// <param name="index"></param>
 	/// <returns></returns>
 	public ComboTreeNode this[int index] {
-		get {
-			return _innerList[index];
-		}
-		set {
+		get => _innerList[index];
+        set {
 			ComboTreeNode oldItem = _innerList[index];
 			_innerList[index] = value;
 			value.Parent = _node;
@@ -445,30 +435,18 @@ public class ComboTreeNodeCollection : IList<ComboTreeNode>, IList, INotifyColle
 		Insert(index, (ComboTreeNode)value);
 	}
 
-	bool System.Collections.IList.IsFixedSize {
-		get {
-			return false;
-		}
-	}
+	bool System.Collections.IList.IsFixedSize => false;
 
-	bool System.Collections.IList.IsReadOnly {
-		get {
-			return false;
-		}
-	}
+    bool System.Collections.IList.IsReadOnly => false;
 
-	void IList.Remove(object value) {
+    void IList.Remove(object value) {
 		Remove((ComboTreeNode)value);
 	}
 
 	object System.Collections.IList.this[int index] {
-		get {
-			return this[index];
-		}
-		set {
-			this[index] = (ComboTreeNode)value;
-		}
-	}
+		get => this[index];
+        set => this[index] = (ComboTreeNode)value;
+    }
 
 	#endregion
 
@@ -478,19 +456,11 @@ public class ComboTreeNodeCollection : IList<ComboTreeNode>, IList, INotifyColle
 		((ICollection)_innerList).CopyTo(array, index);
 	}
 
-	bool ICollection.IsSynchronized {
-		get {
-			return ((ICollection)_innerList).IsSynchronized;
-		}
-	}
+	bool ICollection.IsSynchronized => ((ICollection)_innerList).IsSynchronized;
 
-	object ICollection.SyncRoot {
-		get {
-			return ((ICollection)_innerList).SyncRoot;
-		}
-	}
+    object ICollection.SyncRoot => ((ICollection)_innerList).SyncRoot;
 
-	#endregion
+    #endregion
 
 	#region INotifyCollectionChanged Members
 

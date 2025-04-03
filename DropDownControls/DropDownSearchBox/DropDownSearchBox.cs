@@ -16,23 +16,17 @@ using System.Diagnostics;
 /// </summary>
 [ToolboxItem(true), DesignerCategory("")]
 public class DropDownSearchBox : ComboTreeBox {
-
-	private TextServices _services;
-	private ComboTreeNodeCollection _normalNodes;
+    private ComboTreeNodeCollection _normalNodes;
 	private ComboTreeNode _normalSelectedNode;
-	private bool _inSearchMode;
-	private CancellationTokenSource _cts;
+    private CancellationTokenSource _cts;
 
 	/// <summary>
 	/// Gets a collection containing the nodes normally displayed in the 
 	/// drop-down while search mode is active.
 	/// </summary>
-	public ComboTreeNodeCollection NormalNodes {
-		get {
-			return _inSearchMode ? _normalNodes : Nodes;
-		}
-	}
-	/// <summary>
+	public ComboTreeNodeCollection NormalNodes => InSearchMode ? _normalNodes : Nodes;
+
+    /// <summary>
 	/// Gets a collection containing the nodes normally displayed in the 
 	/// drop-down while search mode is active, including all child nodes.
 	/// </summary>
@@ -53,21 +47,14 @@ public class DropDownSearchBox : ComboTreeBox {
 	/// Gets a value indicating whether the control is in search mode.
 	/// </summary>
 	[Browsable(false)]
-	public bool InSearchMode {
-		get {
-			return _inSearchMode;
-		}
-	}
-	/// <summary>
+	public bool InSearchMode { get; private set; }
+
+    /// <summary>
 	/// Gets the <see cref="TextServices"/> instance used to provide text entry.
 	/// </summary>
-	protected TextServices TextServices {
-		get {
-			return _services;
-		}
-	}
+	protected TextServices TextServices { get; }
 
-	/// <summary>
+    /// <summary>
 	/// Fired when a search needs to be performed.
 	/// </summary>
 	public event EventHandler<PerformSearchEventArgs> PerformSearch;
@@ -80,16 +67,16 @@ public class DropDownSearchBox : ComboTreeBox {
 	/// Initialises a new instance of the <see cref="DropDownSearchBox"/> class using default values.
 	/// </summary>
 	public DropDownSearchBox() {
-		_services = new TextServices(this, GetTextBoxBounds);
+		TextServices = new TextServices(this, GetTextBoxBounds);
 		DropDownStyle = DropDownControlStyles.FakeEditable;
 		ShowGlyphs = false;
 		_normalNodes = new ComboTreeNodeCollection(null);
 		MinSearchTermLength = 3;
 		DropDownHeight = 300;
 
-		_services.TextChanged += _services_TextChanged;
-		_services.ContextMenuClosed += _services_ContextMenuClosed;
-		_services.ContextMenuOpening += _services_ContextMenuOpening;
+		TextServices.TextChanged += _services_TextChanged;
+		TextServices.ContextMenuClosed += _services_ContextMenuClosed;
+		TextServices.ContextMenuOpening += _services_ContextMenuOpening;
 
 		DropDownControl.KeyDown += DropDownControl_KeyDown;
 		DropDownControl.KeyPress += DropDownControl_KeyPress;
@@ -115,7 +102,7 @@ public class DropDownSearchBox : ComboTreeBox {
 	/// Places the control in search mode.
 	/// </summary>
 	private void EnterSearchMode() {
-		_inSearchMode = true;
+		InSearchMode = true;
 
 		BeginUpdate();
 
@@ -140,7 +127,7 @@ public class DropDownSearchBox : ComboTreeBox {
 	/// </summary>
 	/// <param name="commit"></param>
 	private void LeaveSearchMode(bool commit) {
-		_inSearchMode = false;
+		InSearchMode = false;
 
 		BeginUpdate();
 
@@ -263,7 +250,7 @@ public class DropDownSearchBox : ComboTreeBox {
 			Invoke(new Action<ComboTreeNodeCollection>(ApplySearchResults), results);
 		}
 		else {
-			if (_inSearchMode) {
+			if (InSearchMode) {
 				BeginUpdate();
 				Nodes.Clear();
 
@@ -297,8 +284,8 @@ public class DropDownSearchBox : ComboTreeBox {
 	/// </summary>
 	/// <param name="e"></param>
 	protected override void OnSelectedNodeChanged(EventArgs e) {
-		if (_inSearchMode && (SelectedNode != null)) LeaveSearchMode(true);
-		if (!_inSearchMode) base.OnSelectedNodeChanged(e);
+		if (InSearchMode && (SelectedNode != null)) LeaveSearchMode(true);
+		if (!InSearchMode) base.OnSelectedNodeChanged(e);
 	}
 
 	/// <summary>
@@ -308,8 +295,8 @@ public class DropDownSearchBox : ComboTreeBox {
 	protected override void OnDropDownClosed(EventArgs e) {
 		base.OnDropDownClosed(e);
 
-		_services.End();
-		_services.Clear();
+		TextServices.End();
+		TextServices.Clear();
 	}
 
 	/// <summary>
@@ -319,7 +306,7 @@ public class DropDownSearchBox : ComboTreeBox {
 	protected override void OnDropDown(EventArgs e) {
 		base.OnDropDown(e);
 
-		_services.Begin();
+		TextServices.Begin();
 	}
 
 	/// <summary>
@@ -328,8 +315,8 @@ public class DropDownSearchBox : ComboTreeBox {
 	/// </summary>
 	private void DoPaste() {
 		if (!DroppedDown) DroppedDown = true;
-		if (!_inSearchMode) EnterSearchMode();
-		_services.Paste();
+		if (!InSearchMode) EnterSearchMode();
+		TextServices.Paste();
 	}
 
 	/// <summary>
@@ -357,7 +344,7 @@ public class DropDownSearchBox : ComboTreeBox {
 			return;
 		}
 
-		_services.HandleKeyDown(e);
+		TextServices.HandleKeyDown(e);
 
 		if (!e.Handled) base.OnKeyDown(e);
 	}
@@ -371,7 +358,7 @@ public class DropDownSearchBox : ComboTreeBox {
 			if (!DroppedDown) DroppedDown = true;
 		}
 
-		_services.HandleKeyPress(e);
+		TextServices.HandleKeyPress(e);
 
 		if (!e.Handled) base.OnKeyPress(e);
 	}
@@ -382,7 +369,7 @@ public class DropDownSearchBox : ComboTreeBox {
 	/// <param name="e"></param>
 	protected override void OnPaintContent(DropDownPaintEventArgs e) {
 		if (DroppedDown) {
-			_services.DrawText(e.Graphics);
+			TextServices.DrawText(e.Graphics);
 		}
 		else {
 			base.OnPaintContent(e);
@@ -400,7 +387,7 @@ public class DropDownSearchBox : ComboTreeBox {
 			}
 		}
 
-		if (_services.HandleMouseDown(e)) return;
+		if (TextServices.HandleMouseDown(e)) return;
 
 		base.OnMouseDown(e);
 	}
@@ -426,7 +413,7 @@ public class DropDownSearchBox : ComboTreeBox {
 	/// </summary>
 	/// <param name="e"></param>
 	protected override void OnMouseMove(MouseEventArgs e) {
-		if (_services.HandleMouseMove(e)) return;
+		if (TextServices.HandleMouseMove(e)) return;
 
 		base.OnMouseMove(e);
 	}
@@ -436,7 +423,7 @@ public class DropDownSearchBox : ComboTreeBox {
 	/// </summary>
 	/// <param name="e"></param>
 	protected override void OnMouseClick(MouseEventArgs e) {
-		if (_services.HandleMouseClick(e)) return;
+		if (TextServices.HandleMouseClick(e)) return;
 
 		base.OnMouseClick(e);
 	}
@@ -457,10 +444,10 @@ public class DropDownSearchBox : ComboTreeBox {
 			_cts = null;
 		}
 
-		if (_services.Length > 0) {
-			if (!_inSearchMode) EnterSearchMode();
+		if (TextServices.Length > 0) {
+			if (!InSearchMode) EnterSearchMode();
 
-			if (_services.Length >= MinSearchTermLength) {
+			if (TextServices.Length >= MinSearchTermLength) {
 				// start async search operation
 				BeginUpdate();
 				Nodes.Clear();
@@ -470,7 +457,7 @@ public class DropDownSearchBox : ComboTreeBox {
 				_cts = new CancellationTokenSource();
 				ComboTreeNodeCollection results = new ComboTreeNodeCollection(null);
 
-				var task = Task.Factory.StartNew(() => OnPerformSearch(new PerformSearchEventArgs(_services.Text, _cts.Token, results)), _cts.Token);
+				var task = Task.Factory.StartNew(() => OnPerformSearch(new PerformSearchEventArgs(TextServices.Text, _cts.Token, results)), _cts.Token);
 
 				task.ContinueWith(t => {
 					if (t.IsFaulted) {
@@ -494,7 +481,7 @@ public class DropDownSearchBox : ComboTreeBox {
 			}
 		}
 		else {
-			if (_inSearchMode) LeaveSearchMode(false);
+			if (InSearchMode) LeaveSearchMode(false);
 		}
 	}
 

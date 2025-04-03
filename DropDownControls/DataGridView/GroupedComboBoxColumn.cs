@@ -106,68 +106,45 @@ namespace DropDownControls {
 		/// <see cref="GroupedComboBoxColumn.DisplayMember"/> property.
 		/// </summary>
 		public string DisplayMember {
-			get {
-				return _displayMember ?? ((OwningColumn != null) ? ((GroupedComboBoxColumn)OwningColumn).DisplayMember : null);
-			}
-			set {
-				_displayMember = value;
-			}
-		}
+			get => _displayMember ?? ((OwningColumn != null) ? ((GroupedComboBoxColumn)OwningColumn).DisplayMember : null);
+            set => _displayMember = value;
+        }
 		/// <summary>
 		/// Gets or sets a value which overrides the owning column's 
 		/// <see cref="GroupedComboBoxColumn.ValueMember"/> property.
 		/// </summary>
 		public string ValueMember {
-			get {
-				return _valueMember ?? ((OwningColumn != null) ? ((GroupedComboBoxColumn)OwningColumn).ValueMember : null);
-			}
-			set {
-				_valueMember = value;
-			}
-		}
+			get => _valueMember ?? ((OwningColumn != null) ? ((GroupedComboBoxColumn)OwningColumn).ValueMember : null);
+            set => _valueMember = value;
+        }
 		/// <summary>
 		/// Gets or sets a value which overrides the owning column's 
 		/// <see cref="GroupedComboBoxColumn.GroupMember"/> property.
 		/// </summary>
 		public string GroupMember {
-			get {
-				return _groupMember ?? ((OwningColumn != null) ? ((GroupedComboBoxColumn)OwningColumn).GroupMember : null);
-			}
-			set {
-				_groupMember = value;
-			}
-		}
+			get => _groupMember ?? ((OwningColumn != null) ? ((GroupedComboBoxColumn)OwningColumn).GroupMember : null);
+            set => _groupMember = value;
+        }
 		/// <summary>
 		/// Gets or sets a value which overrides the owning column's 
 		/// <see cref="GroupedComboBoxColumn.DataSource"/> property.
 		/// </summary>
 		public object DataSource {
-			get {
-				return _dataSource ?? ((OwningColumn != null) ? ((GroupedComboBoxColumn)OwningColumn).DataSource : null);
-			}
-			set {
-				_dataSource = value;
-			}
-		}
+			get => _dataSource ?? ((OwningColumn != null) ? ((GroupedComboBoxColumn)OwningColumn).DataSource : null);
+            set => _dataSource = value;
+        }
 		/// <summary>
 		/// Gets the type of editing control used by the cell.
 		/// </summary>
-		public override Type EditType {
-			get {
-				return typeof(GroupedComboBoxEditingControl);
-			}
-		}
-		/// <summary>
+		public override Type EditType => typeof(GroupedComboBoxEditingControl);
+
+        /// <summary>
 		/// Gets the type of the formatted value for the cell, which is 
 		/// <see cref="System.String"/>.
 		/// </summary>
-		public override Type FormattedValueType {
-			get {
-				return typeof(String);
-			}
-		}
+		public override Type FormattedValueType => typeof(String);
 
-		/// <summary>
+        /// <summary>
 		/// Parses a formatted value from the editing control. 
 		/// This works by matching the editing control's text against the 
 		/// display values for the list items.
@@ -363,10 +340,8 @@ namespace DropDownControls {
 		}
 
 		object IDataGridViewEditingControl.EditingControlFormattedValue {
-			get {
-				return ((IDataGridViewEditingControl)this).GetEditingControlFormattedValue(DataGridViewDataErrorContexts.Formatting); 
-			}
-			set {
+			get => ((IDataGridViewEditingControl)this).GetEditingControlFormattedValue(DataGridViewDataErrorContexts.Formatting);
+            set {
 				string valueStr = value as string;
 
 				if (valueStr != null) {
@@ -399,11 +374,9 @@ namespace DropDownControls {
 			return !dataGridViewWantsInputKey;
 		}
 
-		Cursor IDataGridViewEditingControl.EditingPanelCursor {
-			get { return Cursors.Default; }
-		}
+		Cursor IDataGridViewEditingControl.EditingPanelCursor => Cursors.Default;
 
-		object IDataGridViewEditingControl.GetEditingControlFormattedValue(DataGridViewDataErrorContexts context) {
+        object IDataGridViewEditingControl.GetEditingControlFormattedValue(DataGridViewDataErrorContexts context) {
 			return Text;
 		}
 
@@ -412,13 +385,9 @@ namespace DropDownControls {
 			DroppedDown = true;
 		}
 
-		bool IDataGridViewEditingControl.RepositionEditingControlOnValueChange {
-			get {
-				return false;
-			}
-		}
+		bool IDataGridViewEditingControl.RepositionEditingControlOnValueChange => false;
 
-		#endregion
+        #endregion
 
 		private void NotifyDataGridViewOfValueChange() {
 			((IDataGridViewEditingControl)this).EditingControlValueChanged = true;

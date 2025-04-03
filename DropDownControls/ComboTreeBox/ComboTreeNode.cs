@@ -13,129 +13,83 @@ using System.Windows.Forms;
 /// </summary>
 [DefaultProperty("Text")]
 public class ComboTreeNode : IComparable<ComboTreeNode>, ICloneable {
+    private CheckState _checkState;
+    private bool _selectable;
 
-	private string _name;
-    private ComboTreeNodeCollection _nodes;
-	private string _text;
-	private FontStyle _fontStyle;
-	private int _imageIndex;
-	private string _imageKey;
-	private bool _expanded;
-	private int _expandedImageIndex;
-	private string _expandedImageKey;	
-    private ComboTreeNode _parent;	
-    private object _tag;
-	private CheckState _checkState;
-	private string _toolTip;
-	private bool _selectable;
-	private Color _foreColor;
-	private Cursor _cursor;
-
-	/// <summary>
+    /// <summary>
 	/// Gets or sets the cursor displayed when the user moves the mouse over the node.
 	/// </summary>
 	[DefaultValue(null), Description("The cursor displayed when the user moves the mouse over the node.")]
-	public Cursor Cursor {
-		get {
-			return _cursor;
-		}
-		set {
-			_cursor = value;
-		}
-	}
-	/// <summary>
+	public Cursor Cursor { get; set; }
+
+    /// <summary>
 	/// Gets or sets the node that owns this node, or null for a top-level node.
 	/// </summary>
 	[Browsable(false)]
-	public ComboTreeNode Parent {
-		get { return _parent; }
-		internal set { _parent = value; }
-	}
-	/// <summary>
+	public ComboTreeNode Parent { get; internal set; }
+
+    /// <summary>
 	/// Gets or sets the text displayed on the node.
 	/// </summary>
 	[DefaultValue("ComboTreeNode"), Description("The text displayed on the node."), Category("Appearance")]
-	public string Text {
-		get { return _text; }
-		set { _text = value; }
-	}
-	/// <summary>
+	public string Text { get; set; }
+
+    /// <summary>
 	/// Gets or sets the font style to use when painting the node.
 	/// </summary>
 	[DefaultValue(FontStyle.Regular), Description("The font style to use when painting the node."), Category("Appearance")]
-	public FontStyle FontStyle {
-		get { return _fontStyle; }
-		set { _fontStyle = value; }
-	}
-	/// <summary>
+	public FontStyle FontStyle { get; set; }
+
+    /// <summary>
 	/// Gets or sets the index of the image (in the ImageList on the ComboTreeBox control) to use for this node.
 	/// </summary>
 	[DefaultValue(-1), Description("The index of the image (in the ImageList on the ComboTreeBox control) to use for this node."), Category("Appearance")]
-	public int ImageIndex {
-		get { return _imageIndex; }
-		set { _imageIndex = value; }
-	}
-	/// <summary>
+	public int ImageIndex { get; set; }
+
+    /// <summary>
 	/// Gets or sets the name of the image to use for this node.
 	/// </summary>
 	[DefaultValue(""), Description("The name of the image to use for this node."), Category("Appearance")]
-	public string ImageKey {
-		get { return _imageKey; }
-		set { _imageKey = value; }
-	}
-	/// <summary>
+	public string ImageKey { get; set; }
+
+    /// <summary>
 	/// Gets or sets whether the node is expanded (i.e. its child nodes are visible). Changes are not reflected in the dropdown portion of the 
 	/// control until the next time it is opened.
 	/// </summary>
 	[Browsable(false)]
-	public bool Expanded {
-		get { return _expanded; }
-		set { _expanded = value; }
-	}
-	/// <summary>
+	public bool Expanded { get; set; }
+
+    /// <summary>
 	/// Gets or sets the index of the image to use for this node when expanded.
 	/// </summary>
 	[DefaultValue(-1), Description("The index of the image to use for this node when expanded."), Category("Appearance")]
-	public int ExpandedImageIndex {
-		get { return _expandedImageIndex; }
-		set { _expandedImageIndex = value; }
-	}
-	/// <summary>
+	public int ExpandedImageIndex { get; set; }
+
+    /// <summary>
 	/// Gets or sets the name of the image to use for this node when expanded.
 	/// </summary>
 	[DefaultValue(""), Description("The name of the image to use for this node when expanded."), Category("Appearance")]
-	public string ExpandedImageKey {
-		get { return _expandedImageKey; }
-		set { _expandedImageKey = value; }
-	}
-	/// <summary>
+	public string ExpandedImageKey { get; set; }
+
+    /// <summary>
 	/// Gets or sets the colour of the node. If empty, the control's foreground colour is used.
 	/// </summary>
 	[DefaultValue(typeof(Color), "Empty"), Description("The colour of the node. If empty, the control's foreground colour is used.")]
-	public Color ForeColor {
-		get {
-			return _foreColor;
-		}
-		set {
-			_foreColor = value;
-		}
-	}
-	/// <summary>
+	public Color ForeColor { get; set; }
+
+    /// <summary>
 	/// Gets a collection of the child nodes for this node.
 	/// </summary>
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Content), Description("The collection of the child nodes for this node."), Category("Data")]
-	public ComboTreeNodeCollection Nodes {
-		get { return _nodes; }
-	}
-	/// <summary>
+	public ComboTreeNodeCollection Nodes { get; }
+
+    /// <summary>
 	/// Gets or sets the name of the node.
 	/// </summary>
 	[Description("The name of the node."), DefaultValue(""), Category("Design")]
-	public string Name {
-		get { return _name; }
-		set { _name = value; }
-	}
-	/// <summary>
+	public string Name { get; set; }
+
+    /// <summary>
 	/// Determines the zero-based depth of the node, relative to the ComboTreeBox control.
 	/// </summary>
 	[Browsable(false)]
@@ -143,7 +97,7 @@ public class ComboTreeNode : IComparable<ComboTreeNode>, ICloneable {
 		get {
 			int depth = 0;
 			ComboTreeNode node = this;
-			while ((node = node._parent) != null) depth++;
+			while ((node = node.Parent) != null) depth++;
 			return depth;
 		}
 	}
@@ -152,8 +106,8 @@ public class ComboTreeNode : IComparable<ComboTreeNode>, ICloneable {
 	/// </summary>
 	[DefaultValue(CheckState.Unchecked), Category("Appearance")]
 	public CheckState CheckState {
-		get { return _checkState; }
-		set {
+		get => _checkState;
+        set {
 			bool diff = (_checkState != value);
 			_checkState = value;
 			if (diff) OnCheckStateChanged();
@@ -164,20 +118,16 @@ public class ComboTreeNode : IComparable<ComboTreeNode>, ICloneable {
 	/// </summary>
 	[DefaultValue(false), Category("Appearance")]
 	public bool Checked {
-		get { return (_checkState == CheckState.Checked); }
-		set {
-			CheckState = value ? CheckState.Checked : CheckState.Unchecked;
-		}
-	}
+		get => (_checkState == CheckState.Checked);
+        set => CheckState = value ? CheckState.Checked : CheckState.Unchecked;
+    }
 	/// <summary>
 	/// Gets or sets a value indicating whether the node can be selected by the user.
 	/// </summary>
 	[DefaultValue(true), Description("Determines whether the node can be selected by the user.")]
 	public bool Selectable {
-		get {
-			return _selectable;
-		}
-		set {
+		get => _selectable;
+        set {
 			if (_selectable != value) {
 				_selectable = value;
 			}
@@ -187,20 +137,15 @@ public class ComboTreeNode : IComparable<ComboTreeNode>, ICloneable {
 	/// Gets or sets a user-defined object associated with this ComboTreeNode.
 	/// </summary>
 	[Description("User-defined object associated with this ComboTreeNode."), DefaultValue(""), Category("Data"), TypeConverter(typeof(StringConverter))]
-	public object Tag {
-		get { return _tag; }
-		set { _tag = value; }
-	}
-	/// <summary>
+	public object Tag { get; set; }
+
+    /// <summary>
 	/// Gets or sets the tooltip text associated with this node.
 	/// </summary>
 	[DefaultValue(""), Description("The tooltip text associated with this node."), Category("Appearance")]
-	public string ToolTip {
-		get { return _toolTip; }
-		set { _toolTip = value; }
-	}
+	public string ToolTip { get; set; }
 
-	/// <summary>
+    /// <summary>
 	/// Fired when the value of the <see cref="CheckState"/> property changes.
 	/// </summary>
 	[Browsable(false)]
@@ -210,13 +155,13 @@ public class ComboTreeNode : IComparable<ComboTreeNode>, ICloneable {
 	/// Initialises a new instance of ComboTreeNode using default (empty) values.
 	/// </summary>
 	public ComboTreeNode() {
-		_nodes = new ComboTreeNodeCollection(this);
-		_name = _text = String.Empty;
-		_fontStyle = FontStyle.Regular;
-		_foreColor = Color.Empty;
-		_expandedImageIndex = _imageIndex = -1;
-		_expandedImageKey = _imageKey = String.Empty;
-		_expanded = false;
+		Nodes = new ComboTreeNodeCollection(this);
+		Name = Text = String.Empty;
+		FontStyle = FontStyle.Regular;
+		ForeColor = Color.Empty;
+		ExpandedImageIndex = ImageIndex = -1;
+		ExpandedImageKey = ImageKey = String.Empty;
+		Expanded = false;
 		_selectable = true;
 	}
 
@@ -225,7 +170,7 @@ public class ComboTreeNode : IComparable<ComboTreeNode>, ICloneable {
 	/// </summary>
 	/// <param name="text"></param>
 	public ComboTreeNode(string text) : this() {
-		this._text = text;
+		this.Text = text;
 	}
 
 	/// <summary>
@@ -234,8 +179,8 @@ public class ComboTreeNode : IComparable<ComboTreeNode>, ICloneable {
 	/// <param name="name"></param>
 	/// <param name="text"></param>
 	public ComboTreeNode(string name, string text) : this() {
-		this._text = text;
-		this._name = name;
+		this.Text = text;
+		this.Name = name;
 	}
 
 	/// <summary>
@@ -292,10 +237,10 @@ public class ComboTreeNode : IComparable<ComboTreeNode>, ICloneable {
 	/// </summary>
 	/// <returns></returns>
 	public override string ToString() {
-		if (String.IsNullOrEmpty(_name))
-			return String.Format("\"{0}\"", _text);
+		if (String.IsNullOrEmpty(Name))
+			return String.Format("\"{0}\"", Text);
 		else
-			return String.Format("{0} \"{1}\"", _name, _text);
+			return String.Format("{0} \"{1}\"", Name, Text);
 	}
 
 	/// <summary>
@@ -366,7 +311,7 @@ public class ComboTreeNode : IComparable<ComboTreeNode>, ICloneable {
 	/// <param name="other"></param>
 	/// <returns></returns>
 	public int CompareTo(ComboTreeNode other) {
-		return StringComparer.InvariantCultureIgnoreCase.Compare(this._text, other._text);
+		return StringComparer.InvariantCultureIgnoreCase.Compare(this.Text, other.Text);
 	}
 
 	#endregion
@@ -436,12 +381,9 @@ public class ComboTreeNodePaintEventArgs : EventArgs {
 	/// <summary>
 	/// Gets the format flags used for the text on the node.
 	/// </summary>
-	public TextFormatFlags TextFormatFlags {
-		get {
-			return ComboTreeDropDown.TEXT_FORMAT_FLAGS;
-		}
-	}
-	/// <summary>
+	public TextFormatFlags TextFormatFlags => ComboTreeDropDown.TEXT_FORMAT_FLAGS;
+
+    /// <summary>
 	/// Gets the <see cref="System.Drawing.Font"/> used on the node.
 	/// </summary>
 	public Font Font { get; private set; }

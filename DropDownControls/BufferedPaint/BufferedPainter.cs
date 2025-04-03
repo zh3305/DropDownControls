@@ -23,7 +23,6 @@ namespace BufferedPainting {
     public class BufferedPainter<TState> {
 
         bool _animationsNeedCleanup;
-        bool _enabled;
         TState _currentState;
         TState _newState;
         TState _defaultState;
@@ -57,21 +56,13 @@ namespace BufferedPainting {
         /// <summary>
         /// Gets or sets whether animation is enabled.
         /// </summary>
-        public bool Enabled {
-            get {
-                return _enabled;
-            }
-            set {
-                _enabled = value;
-            }
-        }
+        public bool Enabled { get; set; }
+
         /// <summary>
         /// Gets or sets the default visual state. The default value is 'default(TState)'.
         /// </summary>
         public TState DefaultState { 
-            get {
-                return _defaultState; 
-            } 
+            get => _defaultState;
             set {
                 bool usingOldDefault = Object.Equals(_currentState, _defaultState);
                 _defaultState = value;
@@ -92,9 +83,7 @@ namespace BufferedPainting {
         /// Gets or sets the current visual state.
         /// </summary>
         public TState State {
-            get {
-                return _currentState;
-            }
+            get => _currentState;
             set {
                 bool diff = !Object.Equals(_currentState, value);
                 _newState = value;
@@ -121,7 +110,7 @@ namespace BufferedPainting {
             Transitions = new HashSet<BufferedPaintTransition<TState>>();
             Triggers = new HashSet<VisualStateTrigger<TState>>();
 
-            _enabled = true;
+            Enabled = true;
             _defaultState = _currentState = _newState = default(TState);
 
             Control = control;

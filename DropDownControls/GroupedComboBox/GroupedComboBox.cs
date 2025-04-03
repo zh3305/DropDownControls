@@ -122,11 +122,10 @@ public class GroupedComboBox : ComboBox, IComparer {
 	[RefreshProperties(RefreshProperties.Repaint)]
 	[AttributeProvider(typeof(IListSource))]
 	public new object DataSource {
-		get {
-			// binding source should be transparent to the user
-			return (_bindingSource != null) ? _bindingSource.DataSource : null;
-		}
-		set {
+		get =>
+            // binding source should be transparent to the user
+            (_bindingSource != null) ? _bindingSource.DataSource : null;
+        set {
 			if (_internalSource != null) _internalSource.Dispose();
 			_internalSource = null;
 
@@ -147,18 +146,15 @@ public class GroupedComboBox : ComboBox, IComparer {
 	/// Gets a value indicating whether the drawing of elements in the list will be handled by user code. 
 	/// </summary>
 	[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-	public new DrawMode DrawMode {
-		get {
-			return base.DrawMode;
-		}
-	}
-	/// <summary>
+	public new DrawMode DrawMode => base.DrawMode;
+
+    /// <summary>
 	/// Gets or sets the property to use when grouping items in the list.
 	/// </summary>
 	[DefaultValue("")]
 	public string GroupMember {
-		get { return _groupMember; }
-		set {
+		get => _groupMember;
+        set {
 			_groupMember = value;
 			if (_bindingSource != null) SyncInternalItems();
 		}
@@ -170,10 +166,8 @@ public class GroupedComboBox : ComboBox, IComparer {
 	/// </summary>
 	[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	public IComparer SortComparer {
-		get {
-			return _sortComparer;
-		}
-		set {
+		get => _sortComparer;
+        set {
 			if (value == null) throw new ArgumentNullException("value");
 			if (value == this) throw new ArgumentException("The owning control cannot be used as a comparer.", "value");
 
@@ -188,8 +182,8 @@ public class GroupedComboBox : ComboBox, IComparer {
 	/// </summary>
 	[DefaultValue(106), Category("Behavior"), Description("The height in pixels of the drop-down portion of the control.")]
 	public new int DropDownHeight {
-		get { return base.DropDownHeight; }
-		set {
+		get => base.DropDownHeight;
+        set {
 			base.DropDownHeight = value;
 			_dropDownHeightSet = true;
 		}
@@ -198,18 +192,17 @@ public class GroupedComboBox : ComboBox, IComparer {
 	/// Gets a value indicating whether the items in the drop-down portion of the control are sorted.
 	/// </summary>
 	[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-	public new bool Sorted {
-		get { return true; }
-	}
-	/// <summary>
+	public new bool Sorted => true;
+
+    /// <summary>
 	/// Gets or sets a value indicating how the list items (within each group) 
 	/// are passed to the <see cref="IComparer"/> that sorts them.
 	/// </summary>
 	[DefaultValue(GroupItemSortModes.Display), Category("Behavior")]
 	[Description("Determines how the list items (within each group) are passed to the IComparer that sorts them.")]
 	public GroupItemSortModes SortMode {
-		get { return _sortMode; }
-		set {
+		get => _sortMode;
+        set {
 			if (_sortMode != value) {
 				_sortMode = value;
 				if (_bindingSource != null) SyncInternalItems();

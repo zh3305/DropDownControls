@@ -22,7 +22,6 @@ public class ComboTreeBox : DropDownControlBase {
 	internal const string DEFAULT_PATH_SEPARATOR = @"\";
 	internal const string DEFAULT_CHECKED_NODE_SEPARATOR = " | ";
 
-    private ComboTreeDropDown _dropDown;
     private int _expandedImageIndex;
     private string _expandedImageKey;
     private int _imageIndex;
@@ -32,13 +31,11 @@ public class ComboTreeBox : DropDownControlBase {
     private ComboTreeNodeCollection _nodes;
     private string _nullValue;
     private string _pathSeparator;
-	private string _checkedNodeSeparator;
     private ComboTreeNode _selectedNode;
 	private bool _showPath;
     private bool _useNodeNamesForPath;
 	private bool _showCheckBoxes;
-	private bool _threeState;
-	private bool _cascadeCheckState;
+    private bool _cascadeCheckState;
 	private int _recurseDepth;
 	private bool _showGlyphs;
 	private int _suspendCheckEvents;
@@ -61,10 +58,8 @@ public class ComboTreeBox : DropDownControlBase {
 	/// </summary>
 	[DefaultValue(true), Description("Determines whether the check state of a node is determined by its child nodes, and vice versa."), Category("Behavior")]
 	public bool CascadeCheckState {
-		get {
-			return _cascadeCheckState;
-		}
-		set {
+		get => _cascadeCheckState;
+        set {
 			bool diff = (_cascadeCheckState != value);
 			_cascadeCheckState = value;
 			
@@ -108,11 +103,9 @@ public class ComboTreeBox : DropDownControlBase {
 	/// Gets or sets the string used to separate the checked nodes.
 	/// </summary>
 	[DefaultValue(DEFAULT_CHECKED_NODE_SEPARATOR), Description("The string used to separate the checked nodes."), Category("Appearance")]
-	public string CheckedNodeSeparator {
-		get { return _checkedNodeSeparator; }
-		set { _checkedNodeSeparator = value; }
-	}
-	/// <summary>
+	public string CheckedNodeSeparator { get; set; }
+
+    /// <summary>
 	/// Gets a value indicating whether connector lines should be rendered.
 	/// </summary>
 	protected internal bool ConnectorsNeeded {
@@ -129,20 +122,15 @@ public class ComboTreeBox : DropDownControlBase {
 	/// <summary>
 	/// Gets the toolstrip drop-down control that displays the nodes.
 	/// </summary>
-	protected ComboTreeDropDown DropDownControl {
-		get {
-			return _dropDown;
-		}
-	}
-	/// <summary>
+	protected ComboTreeDropDown DropDownControl { get; }
+
+    /// <summary>
 	/// Gets or sets a value indicating whether connector lines and expand/collapse glyphs are shown.
 	/// </summary>
 	[DefaultValue(true), Description("Determines whether connector lines and expand/collapse glyphs are shown.")]
 	public bool ShowGlyphs {
-		get {
-			return _showGlyphs;
-		}
-		set {
+		get => _showGlyphs;
+        set {
 			if (_showGlyphs != value) {
 				_showGlyphs = value;
 				Invalidate();
@@ -154,12 +142,8 @@ public class ComboTreeBox : DropDownControlBase {
 	/// </summary>
 	[DefaultValue(ComboTreeDropDown.DEFAULT_DROPDOWN_HEIGHT), Description("The maximum height of the dropdown portion of the control."), Category("Behavior")]
     public int DropDownHeight {
-        get {
-            return _dropDown.DropDownHeight;
-        }
-        set {
-            _dropDown.DropDownHeight = value;
-        }
+        get => DropDownControl.DropDownHeight;
+        set => DropDownControl.DropDownHeight = value;
     }
     /// <summary>
     /// Gets or sets the width of the dropdown portion of the control. 
@@ -167,34 +151,26 @@ public class ComboTreeBox : DropDownControlBase {
     /// </summary>
     [Description("The width of the dropdown portion of the control. Value must be greater than or equal to the width of the control."), Category("Behavior")]
     public int DropDownWidth {
-        get {
-            return Math.Max(_dropDown.DropDownWidth, Width);
-        }
-        set {
-            _dropDown.DropDownWidth = value;
-        }
+        get => Math.Max(DropDownControl.DropDownWidth, Width);
+        set => DropDownControl.DropDownWidth = value;
     }    
     /// <summary>
     /// Gets or sets whether the dropdown portion of the control is displayed.
     /// </summary>
     [Browsable(false)]
     public override bool DroppedDown {
-        get {
-            return base.DroppedDown;
-        }
-        set {
-            SetDroppedDown(value, true);
-        }
+        get => base.DroppedDown;
+        set => SetDroppedDown(value, true);
     }
     /// <summary>
     /// Gets or sets the index of the default image to use for nodes when expanded.
     /// </summary>
     [DefaultValue(0), Description("The index of the default image to use for nodes when expanded."), Category("Appearance")]
     public int ExpandedImageIndex {
-        get { return _expandedImageIndex; }
-		set {
+        get => _expandedImageIndex;
+        set {
 			_expandedImageIndex = value;
-			_dropDown.UpdateVisibleItems();
+			DropDownControl.UpdateVisibleItems();
 		}
     }
     /// <summary>
@@ -202,10 +178,10 @@ public class ComboTreeBox : DropDownControlBase {
     /// </summary>
     [DefaultValue(""), Description("The name of the default image to use for nodes when expanded."), Category("Appearance")]
     public string ExpandedImageKey {
-        get { return _expandedImageKey; }
-		set {
+        get => _expandedImageKey;
+        set {
 			_expandedImageKey = value;
-			_dropDown.UpdateVisibleItems();
+			DropDownControl.UpdateVisibleItems();
 		}
     }
     /// <summary>
@@ -213,10 +189,10 @@ public class ComboTreeBox : DropDownControlBase {
     /// </summary>
     [DefaultValue(0), Description("The index of the default image to use for nodes."), Category("Appearance")]
     public int ImageIndex {
-        get { return _imageIndex; }
-		set {
+        get => _imageIndex;
+        set {
 			_imageIndex = value;
-			_dropDown.UpdateVisibleItems();
+			DropDownControl.UpdateVisibleItems();
 		}
     }
     /// <summary>
@@ -224,10 +200,10 @@ public class ComboTreeBox : DropDownControlBase {
     /// </summary>
     [DefaultValue(""), Description("The name of the default image to use for nodes."), Category("Appearance")]
     public string ImageKey {
-        get { return _imageKey; }
-		set {
+        get => _imageKey;
+        set {
 			_imageKey = value;
-			_dropDown.UpdateVisibleItems();
+			DropDownControl.UpdateVisibleItems();
 		}
     }
     /// <summary>
@@ -235,10 +211,10 @@ public class ComboTreeBox : DropDownControlBase {
     /// </summary>
     [DefaultValue(null), Description("An ImageList component which provides the images displayed beside nodes in the control."), Category("Appearance")]
     public ImageList Images {
-        get { return _images; }
-		set {
+        get => _images;
+        set {
 			_images = value;
-			_dropDown.UpdateVisibleItems();
+			DropDownControl.UpdateVisibleItems();
 		}
     }
     /// <summary>
@@ -246,8 +222,8 @@ public class ComboTreeBox : DropDownControlBase {
     /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Content), Description("The collection of top-level nodes contained by the control."), Category("Data")]
     public ComboTreeNodeCollection Nodes {
-        get { return _nodes; }
-		set {
+        get => _nodes;
+        set {
 			if (value == null) throw new ArgumentNullException("value");
 
 			if (_nodes != null) {
@@ -265,7 +241,7 @@ public class ComboTreeBox : DropDownControlBase {
     /// </summary>
     [DefaultValue(""), Description("The text displayed in the editable portion of the control if the SelectedNode property is null."), Category("Appearance")]
     public string NullValue {
-        get { return _nullValue; }
+        get => _nullValue;
         set {
             _nullValue = value;
             Invalidate();
@@ -282,16 +258,14 @@ public class ComboTreeBox : DropDownControlBase {
 			else
 				return String.Empty;
         }
-        set {
-            SelectedNode = _nodes.ParsePath(value, _pathSeparator, _useNodeNamesForPath);
-        }
+        set => SelectedNode = _nodes.ParsePath(value, _pathSeparator, _useNodeNamesForPath);
     }
     /// <summary>
     /// Gets or sets the string used to separate nodes in the Path property.
     /// </summary>
 	[DefaultValue(DEFAULT_PATH_SEPARATOR), Description("The string used to separate nodes in the path string."), Category("Behavior")]
     public string PathSeparator {
-        get { return _pathSeparator; }
+        get => _pathSeparator;
         set {
             _pathSeparator = value;
             if (_showPath) Invalidate();
@@ -302,7 +276,7 @@ public class ComboTreeBox : DropDownControlBase {
     /// </summary>
     [Browsable(false)]
     public ComboTreeNode SelectedNode {
-        get { return _selectedNode; }
+        get => _selectedNode;
         set {
 			if (!OwnsNode(value)) throw new ArgumentException("Node does not belong to this control.", "value");
 			if ((value != null) && !value.Selectable) throw new ArgumentException("Node is not selectable.", "value");
@@ -314,8 +288,8 @@ public class ComboTreeBox : DropDownControlBase {
 	/// </summary>
 	[DefaultValue(false), Description("Determines whether a checkbox is shown beside each node."), Category("Behavior")]
 	public bool ShowCheckBoxes {
-		get { return _showCheckBoxes; }
-		set {
+		get => _showCheckBoxes;
+        set {
 			_showCheckBoxes = value;
 			_selectedNode = null;
 			Invalidate();
@@ -326,8 +300,8 @@ public class ComboTreeBox : DropDownControlBase {
 	/// </summary>
 	[DefaultValue(false), Description("Determines whether the path to the selected node is displayed in the editable portion of the control."), Category("Appearance")]
 	public bool ShowPath {
-		get { return _showPath; }
-		set {
+		get => _showPath;
+        set {
 			_showPath = value;
 			Invalidate();
 		}
@@ -335,50 +309,37 @@ public class ComboTreeBox : DropDownControlBase {
     /// <summary>
     /// Gets whether the owning control is displaying focus cues.
     /// </summary>
-    internal bool ShowsFocusCues {
-        get {
-            return base.ShowFocusCues;
-        }
-    }
-	/// <summary>
+    internal bool ShowsFocusCues => base.ShowFocusCues;
+
+    /// <summary>
 	/// Hides the Text property from the designer.
 	/// </summary>
 	[Browsable(false)]
 	public override string Text {
-		get {
-			return String.Empty;
-		}
-		set {
-			base.Text = String.Empty;
-		}
-	}
+		get => String.Empty;
+        set => base.Text = String.Empty;
+    }
 	/// <summary>
 	/// Gets or sets a value indicating whether node checkboxes move into the <see cref="CheckState.Indeterminate"/> state after the <see cref="CheckState.Checked"/> state.
 	/// </summary>
 	[DefaultValue(false), Description("Determines whether node checkboxes move into the indeterminate/mixed state after the checked state."), Category("Behavior")]
-	public bool ThreeState {
-		get { return _threeState; }
-		set { _threeState = value; }
-	}
-	/// <summary>
+	public bool ThreeState { get; set; }
+
+    /// <summary>
 	/// Gets or sets the first visible ComboTreeNode in the drop-down portion of the control.
 	/// </summary>
 	[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	public ComboTreeNode FirstVisibleNode {
-		get {
-			return _dropDown.TopNode;
-		}
-		set {
-			_dropDown.TopNode = value;
-		}
-	}
+		get => DropDownControl.TopNode;
+        set => DropDownControl.TopNode = value;
+    }
     /// <summary>
 	/// Determines whether the <see cref="ComboTreeNode.Name"/> property of the nodes is used to construct the path string. 
 	/// The default behaviour is to use the <see cref="ComboTreeNode.Text"/> property.
     /// </summary>
     [DefaultValue(false), Description("Determines whether the Name property of the nodes is used to construct the path string. The default behaviour is to use the Text property."), Category("Behavior")]
     public bool UseNodeNamesForPath {
-        get { return _useNodeNamesForPath; }
+        get => _useNodeNamesForPath;
         set {
             _useNodeNamesForPath = value;
             if (_showPath) Invalidate();
@@ -388,13 +349,9 @@ public class ComboTreeBox : DropDownControlBase {
 	/// Gets the number of ComboTreeNodes visible in the drop-down portion of the control.
 	/// </summary>
 	[Browsable(false)]
-	public int VisibleCount {
-		get {
-			return _dropDown.VisibleCount;
-		}
-	}
+	public int VisibleCount => DropDownControl.VisibleCount;
 
-	/// <summary>
+    /// <summary>
 	/// Fired when the value of the <see cref="SelectedNode"/> property changes.
 	/// </summary>
 	[Description("Occurs when the SelectedNode property changes.")]
@@ -419,7 +376,7 @@ public class ComboTreeBox : DropDownControlBase {
 		// default property values
 		_nullValue = String.Empty;
 		_pathSeparator = DEFAULT_PATH_SEPARATOR;
-		_checkedNodeSeparator = DEFAULT_CHECKED_NODE_SEPARATOR;
+		CheckedNodeSeparator = DEFAULT_CHECKED_NODE_SEPARATOR;
 		_expandedImageIndex = _imageIndex = 0;
 		_expandedImageKey = _imageKey = String.Empty;
 		_cascadeCheckState = true;
@@ -429,10 +386,10 @@ public class ComboTreeBox : DropDownControlBase {
 		Nodes = new ComboTreeNodeCollection(null);
 
 		// dropdown portion
-		_dropDown = new ComboTreeDropDown(this);
-		_dropDown.Opened += new EventHandler(dropDown_Opened);
-		_dropDown.Closed += new ToolStripDropDownClosedEventHandler(dropDown_Closed);
-		_dropDown.UpdateVisibleItems();
+		DropDownControl = new ComboTreeDropDown(this);
+		DropDownControl.Opened += new EventHandler(dropDown_Opened);
+		DropDownControl.Closed += new ToolStripDropDownClosedEventHandler(dropDown_Closed);
+		DropDownControl.UpdateVisibleItems();
     }
 
 	/// <summary>
@@ -462,7 +419,7 @@ public class ComboTreeBox : DropDownControlBase {
     /// </summary>
     /// <param name="disposing"></param>
     protected override void Dispose(bool disposing) {
-        if (disposing) _dropDown.Dispose();
+        if (disposing) DropDownControl.Dispose();
         base.Dispose(disposing);
     }
 
@@ -472,7 +429,7 @@ public class ComboTreeBox : DropDownControlBase {
 	public void EndUpdate() {
 		_isUpdating = false;
 		if (!OwnsNode(_selectedNode)) SetSelectedNode(null);
-		_dropDown.UpdateVisibleItems();
+		DropDownControl.UpdateVisibleItems();
 	}
 
 	/// <summary>
@@ -642,7 +599,7 @@ public class ComboTreeBox : DropDownControlBase {
 		base.OnMouseWheel(e);
 
 		if (DroppedDown)
-			_dropDown.ScrollDropDown(-(e.Delta / 120) * SystemInformation.MouseWheelScrollLines);
+			DropDownControl.ScrollDropDown(-(e.Delta / 120) * SystemInformation.MouseWheelScrollLines);
 		else if (e.Delta > 0) {
 			ComboTreeNode prev = GetPrevSelectableNode();
 			if (prev != null) SetSelectedNode(prev);
@@ -667,7 +624,7 @@ public class ComboTreeBox : DropDownControlBase {
 	/// <param name="e"></param>
 	protected override void OnFontChanged(EventArgs e) {
         base.OnFontChanged(e);
-        _dropDown.Font = Font;
+        DropDownControl.Font = Font;
     }
 
 	/// <summary>
@@ -701,7 +658,7 @@ public class ComboTreeBox : DropDownControlBase {
 	/// <param name="e"></param>
 	protected override void OnLostFocus(EventArgs e) {
         base.OnLostFocus(e);
-        if (!_dropDown.Focused) _dropDown.Close();
+        if (!DropDownControl.Focused) DropDownControl.Close();
     }
 
     /// <summary>
@@ -769,7 +726,7 @@ public class ComboTreeBox : DropDownControlBase {
 	/// </summary>
 	/// <returns></returns>
     public string GetCheckedNodeString() {
-        return string.Join(_checkedNodeSeparator, CheckedNodes.Select(t => _showPath ? GetFullPath(t) : t.ToolTip)
+        return string.Join(CheckedNodeSeparator, CheckedNodes.Select(t => _showPath ? GetFullPath(t) : t.Text)
             .Distinct().OrderBy(s => s));
 
         // StringBuilder sb = new StringBuilder();
@@ -827,9 +784,9 @@ public class ComboTreeBox : DropDownControlBase {
 
         if (raiseEvents) {
             if (droppedDown)
-                _dropDown.Open();
+                DropDownControl.Open();
             else
-                _dropDown.Close();
+                DropDownControl.Close();
         }
     }
 
@@ -852,7 +809,7 @@ public class ComboTreeBox : DropDownControlBase {
     /// <returns></returns>
     private bool ShouldSerializeDropDownWidth() {
         // don't serialize the value unless it exceeds the control's width
-        return _dropDown.DropDownWidth > Width;
+        return DropDownControl.DropDownWidth > Width;
     }
 
     /// <summary>
@@ -909,7 +866,7 @@ public class ComboTreeBox : DropDownControlBase {
 			if (!OwnsNode(_selectedNode)) SetSelectedNode(null);
 
 			// rebuild the view
-			_dropDown.UpdateVisibleItems();
+			DropDownControl.UpdateVisibleItems();
 		}
 	}
 
@@ -919,7 +876,7 @@ public class ComboTreeBox : DropDownControlBase {
 
 			if (_recurseDepth == 1) {
 				foreach (ComboTreeNode child in e.Node.Nodes) {
-					if (_threeState)
+					if (ThreeState)
 						child.CheckState = e.Node.CheckState;
 					else
 						child.Checked = e.Node.Checked;
@@ -936,7 +893,7 @@ public class ComboTreeBox : DropDownControlBase {
 		if (!_isUpdating) {
 			if (_suspendCheckEvents == 0) OnAfterCheck(e);
 			Invalidate();
-			_dropDown.UpdateVisibleItems();
+			DropDownControl.UpdateVisibleItems();
 		}
 	}
 }

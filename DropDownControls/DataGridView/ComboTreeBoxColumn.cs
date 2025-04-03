@@ -163,21 +163,14 @@ namespace DropDownControls {
 		/// <summary>
 		/// Gets the type of editing control to use for the cell.
 		/// </summary>
-		public override Type EditType {
-			get {
-				return typeof(ComboTreeBoxEditingControl);
-			}
-		}
-		/// <summary>
+		public override Type EditType => typeof(ComboTreeBoxEditingControl);
+
+        /// <summary>
 		/// Gets the type of the cell's formatted values.
 		/// </summary>
-		public override Type FormattedValueType {
-			get {
-				return typeof(String);
-			}
-		}
+		public override Type FormattedValueType => typeof(String);
 
-		/// <summary>
+        /// <summary>
 		/// Initialises a new instance of the <see cref="ComboTreeBoxCell"/> class.
 		/// </summary>
 		public ComboTreeBoxCell() {
@@ -339,10 +332,8 @@ namespace DropDownControls {
 		}
 
 		object IDataGridViewEditingControl.EditingControlFormattedValue {
-			get {
-				return ((IDataGridViewEditingControl)this).GetEditingControlFormattedValue(DataGridViewDataErrorContexts.Formatting);
-			}
-			set {
+			get => ((IDataGridViewEditingControl)this).GetEditingControlFormattedValue(DataGridViewDataErrorContexts.Formatting);
+            set {
 				string valueStr = value as string;				
 				if (valueStr != null) Path = valueStr;
 			}
@@ -368,11 +359,9 @@ namespace DropDownControls {
 			return !dataGridViewWantsInputKey;
 		}
 
-		Cursor IDataGridViewEditingControl.EditingPanelCursor {
-			get { return Cursors.Default; }
-		}
+		Cursor IDataGridViewEditingControl.EditingPanelCursor => Cursors.Default;
 
-		object IDataGridViewEditingControl.GetEditingControlFormattedValue(DataGridViewDataErrorContexts context) {
+        object IDataGridViewEditingControl.GetEditingControlFormattedValue(DataGridViewDataErrorContexts context) {
 			return Path;
 		}
 
@@ -380,13 +369,9 @@ namespace DropDownControls {
 			DroppedDown = true;
 		}
 
-		bool IDataGridViewEditingControl.RepositionEditingControlOnValueChange {
-			get {
-				return false;
-			}
-		}
+		bool IDataGridViewEditingControl.RepositionEditingControlOnValueChange => false;
 
-		#endregion
+        #endregion
 
 		private void NotifyDataGridViewOfValueChange() {
 			((IDataGridViewEditingControl)this).EditingControlValueChanged = true;

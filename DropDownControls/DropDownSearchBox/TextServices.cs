@@ -72,8 +72,7 @@ public class TextServices {
 	private int _cpActive;
 	private int _cpEnd;
 	private Func<Rectangle> _boundsCallback;
-	private bool _active;
-	private bool _causedMouseDown;
+    private bool _causedMouseDown;
 	private ContextMenuStrip _cms;
 
 	/// <summary>
@@ -83,19 +82,14 @@ public class TextServices {
 	/// <summary>
 	/// Gets the length of the text captured by the control.
 	/// </summary>
-	public int Length {
-		get {
-			return _searchText.Length;
-		}
-	}
-	/// <summary>
+	public int Length => _searchText.Length;
+
+    /// <summary>
 	/// Gets the text captured by the control.
 	/// </summary>
 	public string Text {
-		get {
-			return _searchText.ToString();
-		}
-		set {
+		get => _searchText.ToString();
+        set {
 			if (Text != value) {
 				_searchText.Remove(0, _searchText.Length);
 				_searchText.Append(value);
@@ -109,10 +103,8 @@ public class TextServices {
 	/// If equal to <see cref="Length"/>, the insertion point is at the end.
 	/// </summary>
 	public int SelectionStart {
-		get {
-			return Math.Min(_cpActive, _cpEnd);
-		}
-		protected set {
+		get => Math.Min(_cpActive, _cpEnd);
+        protected set {
 			if (SelectionStart != value) {
 				Select(Math.Max(0, Math.Min(_searchText.Length, value)), SelectionLength);
 			}
@@ -122,10 +114,8 @@ public class TextServices {
 	/// Gets the length of the selection.
 	/// </summary>
 	public int SelectionLength {
-		get {
-			return Math.Abs(_cpActive - _cpEnd);
-		}
-		set {
+		get => Math.Abs(_cpActive - _cpEnd);
+        set {
 			if (SelectionLength != value) {
 				Select(SelectionStart, Math.Max(0, Math.Min(_searchText.Length, value)));
 			}
@@ -134,13 +124,9 @@ public class TextServices {
 	/// <summary>
 	/// Gets a value indicating whether text services are currently enabled.
 	/// </summary>
-	public bool IsActive {
-		get {
-			return _active;
-		}
-	}
+	public bool IsActive { get; private set; }
 
-	/// <summary>
+    /// <summary>
 	/// Fired when the text captured for the control changes.
 	/// </summary>
 	public event EventHandler TextChanged;
@@ -211,7 +197,7 @@ public class TextServices {
 	/// <param name="e"></param>
 	/// <returns></returns>
 	public bool HandleMouseMove(MouseEventArgs e) {
-		if (_active && _causedMouseDown) {
+		if (IsActive && _causedMouseDown) {
 			if (e.Button == MouseButtons.Left) {
 				_cpActive = CharacterHitTest(e.Location);
 				UpdateCaretPos();
@@ -230,7 +216,7 @@ public class TextServices {
 	/// <param name="e"></param>
 	/// <returns></returns>
 	public bool HandleMouseDown(MouseEventArgs e) {
-		if (_active && _boundsCallback().Contains(e.Location)) {
+		if (IsActive && _boundsCallback().Contains(e.Location)) {
 			if (e.Button == MouseButtons.Left) {
 				Select(CharacterHitTest(e.Location), 0);
 				_causedMouseDown = true;
@@ -255,7 +241,7 @@ public class TextServices {
 	/// <param name="e"></param>
 	/// <returns></returns>
 	public bool HandleMouseClick(MouseEventArgs e) {
-		if (_active && _boundsCallback().Contains(e.Location)) {
+		if (IsActive && _boundsCallback().Contains(e.Location)) {
 			if (e.Button == MouseButtons.Right) {
 				EnsureContextMenu();
 				_cms.Show(Cursor.Position);
@@ -272,7 +258,7 @@ public class TextServices {
 	/// </summary>
 	/// <param name="e"></param>
 	public void HandleKeyPress(KeyPressEventArgs e) {
-		if (_active && !Char.IsControl(e.KeyChar)) {
+		if (IsActive && !Char.IsControl(e.KeyChar)) {
 			if (SelectionLength > 0) {
 				_searchText.Remove(SelectionStart, SelectionLength);
 			}
@@ -295,7 +281,7 @@ public class TextServices {
 	/// </summary>
 	/// <param name="e"></param>
 	public void HandleKeyDown(KeyEventArgs e) {
-		if (_active) {
+		if (IsActive) {
 			bool handled = true;
 
 			if (e.Control && (e.KeyCode == Keys.V)) {
@@ -429,7 +415,7 @@ public class TextServices {
 	/// Displays the caret and enables text services.
 	/// </summary>
 	public void Begin() {
-		_active = true;
+		IsActive = true;
 
 		Owner.Invalidate();
 		Select(_searchText.Length, 0);
@@ -445,7 +431,7 @@ public class TextServices {
 		NativeMethods.DestroyCaret();
 		Owner.Invalidate();
 
-		_active = false;
+		IsActive = false;
 	}
 
 	/// <summary>
@@ -485,7 +471,7 @@ public class TextServices {
 
 		if (rect.Contains(caretPos)) {
 			NativeMethods.SetCaretPos(caretPos.X, caretPos.Y);
-			if (_active) NativeMethods.ShowCaret(Owner.Handle);
+			if (IsActive) NativeMethods.ShowCaret(Owner.Handle);
 		}
 		else {
 			NativeMethods.HideCaret(Owner.Handle);

@@ -3,6 +3,7 @@
   <PropertyGroup>
 	  <TargetFrameworks>net48;net6.0-windows</TargetFrameworks>
 	  <UseWindowsForms>true</UseWindowsForms>
+	  <Authors>$(AssemblyName)</Authors>
   </PropertyGroup>
 
   <ItemGroup>

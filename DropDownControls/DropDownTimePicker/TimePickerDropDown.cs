@@ -16,8 +16,7 @@ using System.Drawing.Drawing2D;
 public class TimePickerDropDown<TSource> : ToolStripDropDown where TSource : Control, ITimePicker {
 
 	TSource _sourceControl;
-	bool _processKeys;
-	bool _selectMinutes;
+    bool _selectMinutes;
 	bool _autoSelectMinutes;
 	Font _clockFont;
 	Point _mouseDownPosition;
@@ -28,17 +27,15 @@ public class TimePickerDropDown<TSource> : ToolStripDropDown where TSource : Con
 	/// Gets or sets a value indicating whether to process keyboard events.
 	/// </summary>
 	[DefaultValue(true)]
-	public bool ProcessKeys {
-		get { return _processKeys; }
-		set { _processKeys = value; }
-	}
-	/// <summary>
+	public bool ProcessKeys { get; set; }
+
+    /// <summary>
 	/// Gets or sets the uncommitted time of day value in the dropdown. 
 	/// The value is committed to the source control when the dropdown closes.
 	/// </summary>
 	public TimeSpan? Value {
-		get { return _value; }
-		set {
+		get => _value;
+        set {
 			if (_value != value) {
 				_value = value;
 				OnValueChanged();
@@ -64,7 +61,7 @@ public class TimePickerDropDown<TSource> : ToolStripDropDown where TSource : Con
 	/// <param name="sourceControl"></param>
 	public TimePickerDropDown(TSource sourceControl) {
 		_sourceControl = sourceControl;
-		_processKeys = true;
+		ProcessKeys = true;
 
 		AutoSize = false;
 		RenderMode = ToolStripRenderMode.System;

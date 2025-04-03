@@ -36,8 +36,8 @@ public abstract class DropDownControlBase : Control {
 	/// </summary>
 	[DefaultValue(true), Description("Determines whether to draw the control with visual styles."), Category("Appearance")]
 	public bool DrawWithVisualStyles {
-		get { return _drawWithVisualStyles; }
-		set {
+		get => _drawWithVisualStyles;
+        set {
 			_drawWithVisualStyles = value;
 			Invalidate();
 		}
@@ -47,8 +47,8 @@ public abstract class DropDownControlBase : Control {
 	/// </summary>
 	[Browsable(false)]
 	public virtual bool DroppedDown {
-		get { return _droppedDown; }
-		set {
+		get => _droppedDown;
+        set {
 			_droppedDown = value;
 			_bufferedPainter.State = GetComboBoxState();
 		}
@@ -58,46 +58,32 @@ public abstract class DropDownControlBase : Control {
 	/// </summary>
 	[DefaultValue(typeof(Color), "Window")]
 	public override Color BackColor {
-		get {
-			return base.BackColor;
-		}
-		set {
-			base.BackColor = value;
-		}
-	}
+		get => base.BackColor;
+        set => base.BackColor = value;
+    }
 	/// <summary>
 	/// Hides the BackgroundImage property on the designer.
 	/// </summary>
 	[Browsable(false)]
 	public override Image BackgroundImage {
-		get {
-			return base.BackgroundImage;
-		}
-		set {
-			base.BackgroundImage = value;
-		}
-	}
+		get => base.BackgroundImage;
+        set => base.BackgroundImage = value;
+    }
 	/// <summary>
 	/// Hides the BackgroundImageLayout property on the designer.
 	/// </summary>
 	[Browsable(false)]
 	public override ImageLayout BackgroundImageLayout {
-		get {
-			return base.BackgroundImageLayout;
-		}
-		set {
-			base.BackgroundImageLayout = value;
-		}
-	}
+		get => base.BackgroundImageLayout;
+        set => base.BackgroundImageLayout = value;
+    }
 	/// <summary>
 	/// Gets or sets the style that the control is rendered in.
 	/// </summary>
 	[DefaultValue(DropDownControlStyles.Discrete), Description("The style that the control is rendered in.")]
 	protected DropDownControlStyles DropDownStyle {
-		get {
-			return _style;
-		}
-		set {
+		get => _style;
+        set {
 			if (_style != value) {
 				_style = value;
 				Invalidate();

@@ -29,9 +29,7 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 
 	TimeSpan? _value;
 	bool _showCheckBox;
-	TimePickerDropDown<DropDownTimePicker> _dropDown;
-	TextServices _services;
-	bool _textEdit;
+    bool _textEdit;
 	string _timeFormat;
 
 	/// <summary>
@@ -39,15 +37,13 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 	/// </summary>
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	public TimeSpan? Value {
-		get {
-			return _value;
-		}
-		set {
+		get => _value;
+        set {
 			if (!ShowCheckBox && !value.HasValue) throw new ArgumentNullException(nameof(Value));
 
 			if (_value != value) {
 				_value = value;
-				if (DroppedDown) _dropDown.Value = _value;
+				if (DroppedDown) DropDownControl.Value = _value;
 				OnValueChanged();
 				Invalidate();
 			}
@@ -58,10 +54,8 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 	/// </summary>
 	[DefaultValue(true)]
 	public bool ShowCheckBox {
-		get {
-			return _showCheckBox;
-		}
-		set {
+		get => _showCheckBox;
+        set {
 			if (_showCheckBox != value) {
 				_showCheckBox = value;
 
@@ -78,32 +72,22 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 	/// <summary>
 	/// Gets the toolstrip drop-down control that is used to select the time of day.
 	/// </summary>
-	protected TimePickerDropDown<DropDownTimePicker> DropDownControl {
-		get {
-			return _dropDown;
-		}
-	}
-	/// <summary>
+	protected TimePickerDropDown<DropDownTimePicker> DropDownControl { get; }
+
+    /// <summary>
 	/// Gets or sets whether the dropdown portion of the control is displayed.
 	/// </summary>
 	[Browsable(false)]
 	public override bool DroppedDown {
-		get {
-			return base.DroppedDown;
-		}
-		set {
-			SetDroppedDown(value, true);
-		}
-	}
+		get => base.DroppedDown;
+        set => SetDroppedDown(value, true);
+    }
 	/// <summary>
 	/// Gets the <see cref="TextServices"/> instance used to provide text entry.
 	/// </summary>
-	protected TextServices TextServices {
-		get {
-			return _services;
-		}
-	}
-	/// <summary>
+	protected TextServices TextServices { get; }
+
+    /// <summary>
 	/// Gets or sets the text displayed on the control.
 	/// </summary>
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), Browsable(false)]
@@ -117,8 +101,8 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 	/// </summary>
 	[DefaultValue("")]
 	public string TimeFormat {
-		get { return _timeFormat; }
-		set {
+		get => _timeFormat;
+        set {
 			if (_timeFormat != value) {
 				_timeFormat = value;
 				Invalidate();
@@ -142,14 +126,14 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 	/// </summary>
 	public DropDownTimePicker() {
 		_showCheckBox = true;
-		_dropDown = new TimePickerDropDown<DropDownTimePicker>(this);
-		_services = new TextServices(this, GetTextBoxBounds);
+		DropDownControl = new TimePickerDropDown<DropDownTimePicker>(this);
+		TextServices = new TextServices(this, GetTextBoxBounds);
 		_timeFormat = String.Empty;
 
 		DropDownStyle = DropDownControlStyles.Editable;
 
-		_dropDown.ValueChanged += DropDown_ValueChanged;
-		_dropDown.Closed += DropDown_Closed;
+		DropDownControl.ValueChanged += DropDown_ValueChanged;
+		DropDownControl.Closed += DropDown_Closed;
 	}	
 
 	/// <summary>
@@ -189,7 +173,7 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 	/// </summary>
 	/// <param name="disposing"></param>
 	protected override void Dispose(bool disposing) {
-		if (disposing) _dropDown.Dispose();
+		if (disposing) DropDownControl.Dispose();
 		base.Dispose(disposing);
 	}
 
@@ -203,9 +187,9 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 
 		if (raiseEvents) {
 			if (droppedDown)
-				_dropDown.Open();
+				DropDownControl.Open();
 			else
-				_dropDown.Close();
+				DropDownControl.Close();
 		}
 	}
 
@@ -215,9 +199,9 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 	/// <returns></returns>
 	private bool BeginEdit() {
 		if (_textEdit) return false;
-		_services.Begin();
-		_services.Text = Text;
-		_services.Select(0, Text.Length);
+		TextServices.Begin();
+		TextServices.Text = Text;
+		TextServices.Select(0, Text.Length);
 		_textEdit = true;
 		Invalidate();
 		return true;
@@ -230,16 +214,16 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 	/// <returns></returns>
 	private bool EndEdit(bool cancel) {
 		if (!_textEdit) return false;
-		_services.End();
+		TextServices.End();
 
 		if (!cancel) {
 			try {
-				Value = Parse(_services.Text);
+				Value = Parse(TextServices.Text);
 			}
 			catch (ArgumentNullException) { }
 		}
 
-		_services.Clear();
+		TextServices.Clear();
 		_textEdit = false;
 		Invalidate();
 		return true;
@@ -256,8 +240,8 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 			// paste
 			if (Clipboard.ContainsText()) {
 				BeginEdit();
-				_services.Clear();
-				_services.Paste();
+				TextServices.Clear();
+				TextServices.Paste();
 				return;
 			}
 		}
@@ -277,7 +261,7 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 			e.Handled = e.SuppressKeyPress = false;
 		}
 
-		if (_textEdit) _services.HandleKeyDown(e);
+		if (_textEdit) TextServices.HandleKeyDown(e);
 
 		base.OnKeyDown(e);
 	}
@@ -307,10 +291,10 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 	/// <param name="e"></param>
 	protected override void OnKeyPress(KeyPressEventArgs e) {
 		if (!Char.IsControl(e.KeyChar)) {
-			if (BeginEdit()) _services.Clear();
+			if (BeginEdit()) TextServices.Clear();
 		}
 
-		if (_textEdit) _services.HandleKeyPress(e);
+		if (_textEdit) TextServices.HandleKeyPress(e);
 		
 		base.OnKeyPress(e);
 	}
@@ -322,7 +306,7 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 	protected override void OnMouseMove(MouseEventArgs e) {
 		base.OnMouseMove(e);
 
-		if (_textEdit) _services.HandleMouseMove(e);
+		if (_textEdit) TextServices.HandleMouseMove(e);
 
 		Invalidate();
 	}
@@ -355,7 +339,7 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 				Value = DateTime.Now.TimeOfDay;
 		}
 
-		if (_textEdit) _services.HandleMouseClick(e);
+		if (_textEdit) TextServices.HandleMouseClick(e);
 	}
 
 	/// <summary>
@@ -374,7 +358,7 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 	/// <param name="e"></param>
 	protected override void OnFontChanged(EventArgs e) {
 		base.OnFontChanged(e);
-		_dropDown.Font = Font;
+		DropDownControl.Font = Font;
 	}
 
 	/// <summary>
@@ -383,7 +367,7 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 	/// <param name="e"></param>
 	protected override void OnLostFocus(EventArgs e) {
 		base.OnLostFocus(e);
-		if (!_dropDown.Focused) _dropDown.Close();
+		if (!DropDownControl.Focused) DropDownControl.Close();
 		EndEdit(false);
 	}
 
@@ -414,7 +398,7 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 			EndEdit(false);
 		}
 
-		if (_textEdit) _services.HandleMouseDown(e);
+		if (_textEdit) TextServices.HandleMouseDown(e);
 
 		Invalidate();
 	}
@@ -435,7 +419,7 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 	/// <param name="chkBounds"></param>
 	/// <returns></returns>
 	private System.Windows.Forms.VisualStyles.CheckBoxState GetCheckBoxState(Rectangle chkBounds) {
-		bool isChecked = DroppedDown ? _dropDown.Value.HasValue : Value.HasValue;
+		bool isChecked = DroppedDown ? DropDownControl.Value.HasValue : Value.HasValue;
 		
 		if (!Enabled) {
 			// disabled
@@ -508,10 +492,10 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 					e.Graphics.DrawRectangle(pen, r);
 				}
 			}
-			_services.DrawText(e.Graphics);
+			TextServices.DrawText(e.Graphics);
 		}
 		else {
-			string text = DroppedDown ? Format(_dropDown.Value) : Text;
+			string text = DroppedDown ? Format(DropDownControl.Value) : Text;
 
 			TextRenderer.DrawText(e.Graphics, text, Font, txtBounds, Enabled ? ForeColor : SystemColors.GrayText, TEXT_FORMAT_FLAGS);
 
@@ -529,7 +513,7 @@ public class DropDownTimePicker : DropDownControlBase, ITimePicker {
 		SetDroppedDown(false, false);
 
 		try {
-			Value = _dropDown.Value;
+			Value = DropDownControl.Value;
 		}
 		catch (ArgumentNullException) { }
 	}
